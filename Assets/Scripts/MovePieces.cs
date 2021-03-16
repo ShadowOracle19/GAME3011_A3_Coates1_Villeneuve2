@@ -44,7 +44,7 @@ public class MovePieces : MonoBehaviour
                 }
                 else if(aDir.y > aDir.x)
                 {
-                    add = (new Point(0, (nDir.y > 0) ? 1 : -1));
+                    add = (new Point(0, (nDir.y > 0) ? -1 : 1));
 
                 }
             }
@@ -76,7 +76,7 @@ public class MovePieces : MonoBehaviour
 
         if(!newIndex.Equals(moving.index))
         {
-            game.FlipPieces(moving.index, newIndex);
+            game.FlipPieces(moving.index, newIndex, true);
         }
         else
             game.ResetPiece(moving);

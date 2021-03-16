@@ -17,6 +17,7 @@ public class Match3 : MonoBehaviour
     Node[,] board;
 
     List<NodePiece> update;
+    List<FlippedPieces> flipped;
 
     System.Random random;
     // Start is called before the first frame update
@@ -38,9 +39,62 @@ public class Match3 : MonoBehaviour
         for (int i = 0; i < finishedUpdateing.Count; i++)
         {
             NodePiece piece = finishedUpdateing[i];
+            FlippedPieces flip = getFlipped(piece);
+            NodePiece flippedPiece = null;
+            List<Point> connected = isConnected(piece.index, true);
+            bool wasFlipped = (flip != null);
+
+            if(wasFlipped)//if we flipped to make this update
+            {
+
+                 flippedPiece = flip.getOtherPiece(piece);
+
+                AddPoints(ref connected, isConnected(flippedPiece.index, true));
+            }
+            if(connected.Count == 0) //if we didnt make a match
+            {
+                if (wasFlipped)//if we flipped
+                {
+                    FlipPieces(piece.index, flippedPiece.index, false);//flip back
+
+                }
+            }
+            else //if we made a match
+            {
+                foreach(Point pnt in connected)//remove the node pieces connected
+                {
+                    Node node = getNodeAtPoint(pnt);
+                    NodePiece nodePiece = node.getPiece();
+                    if(nodePiece != null)
+                    {
+                        nodePiece.gameObject.SetActive(false);
+                    }
+                    node.SetPiece(null);
+                }
+            }
+
+            flipped.Remove(flip);//remove the flip
             update.Remove(piece);
         }
     }
+
+
+    FlippedPieces getFlipped(NodePiece p)
+    {
+        FlippedPieces flip = null;
+        for (int i = 0; i < flipped.Count; i++)
+        {
+
+            if (flipped[i].getOtherPiece(p) != null)
+            {
+                flip = flipped[i];
+                break;
+            }
+        }
+        return flip;
+    }
+
+    
 
     void StartGame()
     {
@@ -48,6 +102,7 @@ public class Match3 : MonoBehaviour
         string seed = getRandomSeed();
         random = new System.Random(seed.GetHashCode());
         update = new List<NodePiece>();
+        flipped = new List<FlippedPieces>();
 
         InitializeBoard();
         VerifyBoard();
@@ -118,11 +173,10 @@ public class Match3 : MonoBehaviour
     public void ResetPiece(NodePiece piece)
     {
         piece.ResetPosition();
-        piece.flipped = null;
         update.Add(piece);
     }
 
-    public void FlipPieces(Point one, Point two)
+    public void FlipPieces(Point one, Point two, bool main)
     {
         if (getValueAtPoint(one) < 0)
             return;
@@ -136,8 +190,8 @@ public class Match3 : MonoBehaviour
             nodeOne.SetPiece(pieceTwo);
             nodeTwo.SetPiece(pieceOne);
 
-            pieceOne.flipped = pieceTwo;
-            pieceTwo.flipped = pieceOne;
+            if(main)
+                flipped.Add(new FlippedPieces(pieceOne, pieceTwo));
 
             update.Add(pieceOne);
             update.Add(pieceTwo);
@@ -343,5 +397,29 @@ public class Node
     public NodePiece getPiece()
     {
         return piece;
+    }
+}
+
+
+[System.Serializable]
+public class FlippedPieces
+{
+    public NodePiece one;
+    public NodePiece two;
+
+    public FlippedPieces(NodePiece o, NodePiece t)
+    {
+        one = o;
+        two = t;
+    }
+
+    public NodePiece getOtherPiece(NodePiece p)
+    {
+        if (p == one)
+            return two;
+        else if (p == two)
+            return one;
+        else
+            return null;
     }
 }
