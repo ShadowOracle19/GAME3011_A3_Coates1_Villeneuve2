@@ -54,7 +54,7 @@ public class MovePieces : MonoBehaviour
             Vector2 pos = game.getPositionFromPoint(moving.index);
             if(!newIndex.Equals(moving.index))
             {
-                pos += Point.mult(add, 16).toVector();
+                pos += Point.mult(new Point(add.x, -add.y), 16).toVector();
             }
             moving.MovePositionTo(pos);
         }
@@ -74,11 +74,12 @@ public class MovePieces : MonoBehaviour
         if (moving == null)
             return;
 
-        //if newIndex != moving.index
-        //flip the pieces around in the game board
-
-        //else
-        //reset piece back to original spot
+        if(!newIndex.Equals(moving.index))
+        {
+            game.FlipPieces(moving.index, newIndex);
+        }
+        else
+            game.ResetPiece(moving);
         moving = null;
     }
 }

@@ -12,6 +12,8 @@ public class NodePiece : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     [HideInInspector]
     public Vector2 pos;
     [HideInInspector]
+    public NodePiece flipped = null;
+    [HideInInspector]
     public RectTransform rect;
 
     bool updating;
@@ -19,6 +21,7 @@ public class NodePiece : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     public void Initialize(int v, Point p, Sprite pice)
     {
+        flipped = null;
         img = GetComponent<Image>();
         rect = GetComponent<RectTransform>();
         value = v;
@@ -57,8 +60,18 @@ public class NodePiece : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     public bool UpdatePiece()
     {
-        return true;
-        //return false if it is not moving
+        if(Vector3.Distance(rect.anchoredPosition, pos) > 1)
+        {
+            MovePositionTo(pos);
+            updating = true;
+            return true;
+        }
+        else
+        {
+            rect.anchoredPosition = pos;
+            updating = false;
+            return false;
+        }
     }
 
     public void OnPointerDown(PointerEventData eventData)
