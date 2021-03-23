@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class Match3 : MonoBehaviour
 {
@@ -9,16 +11,21 @@ public class Match3 : MonoBehaviour
     public Sprite[] pieces;
     public RectTransform GameBoard;
     public RectTransform killBoard;
-    public int movesLeft;
     public int PointsNeeded;
     public int PointsGained;
     public bool GameActive = false;
     public GameObject gameBoard;
     public GameObject menu;
+    public TextMeshProUGUI Points;
 
     [Header("Prefabs")]
     public GameObject nodePiece;
     public GameObject killedPiece;
+
+    [Header("Timer")]
+    float currentTime = 0f;
+    float startingTime = 10f;
+    public TextMeshProUGUI countDownText;
 
     int width = 9;
     int height = 14;
@@ -37,19 +44,19 @@ public class Match3 : MonoBehaviour
     public void EasyButtonPress()
     {
         GameActive = true;
-        movesLeft = 30;
+        startingTime = 60f;
         StartGame();
     }
     public void MediumButtonPress()
     {
         GameActive = true;
-        movesLeft = 25;
+        startingTime = 45f;
         StartGame();
     }
     public void HardButtonPress()
     {
         GameActive = true;
-        movesLeft = 20;
+        startingTime = 30f;
         StartGame();
     }
 
@@ -60,25 +67,28 @@ public class Match3 : MonoBehaviour
 
         if(PointsGained >= PointsNeeded)
         {
-            gameBoard.SetActive(false);
-            menu.SetActive(true);
-            GameActive = false;
-            board = null;
-            fills = null;
-            random = null;
-            update = null;
-            flipped = null;
-            dead = null;
-            killed = null;
-
+            ResetBoard();          
             return;
-            //end game
-            //Clear Board
         }
-        else if(movesLeft == 0)
+        //else if(movesLeft == 0)//Time Limit Reached
+        //{
+        //    ResetBoard();
+        //    return;
+        //}
+
+        #region Timer 
+        currentTime -= 1 * Time.deltaTime;
+        countDownText.text = currentTime.ToString("0");
+
+        if(currentTime <= 0)
         {
-            //end game
+            ResetBoard();
+            return;
         }
+        #endregion
+
+
+        Points.text = "Points: " + PointsGained.ToString() + "/" + PointsNeeded.ToString();
 
         List<NodePiece> finishedUpdateing = new List<NodePiece>();
         for (int i = 0; i < update.Count; i++)
@@ -220,6 +230,7 @@ public class Match3 : MonoBehaviour
 
     void StartGame()
     {
+        currentTime = startingTime;
         fills = new int[width];
         string seed = getRandomSeed();
         random = new System.Random(seed.GetHashCode());
@@ -321,7 +332,6 @@ public class Match3 : MonoBehaviour
 
             update.Add(pieceOne);
             update.Add(pieceTwo);
-            movesLeft -= 1;
         }
         else
             ResetPiece(pieceOne);
@@ -520,6 +530,27 @@ public class Match3 : MonoBehaviour
     public Vector2 getPositionFromPoint(Point p)
     {
         return new Vector2(32 + (64 * p.x), -32 - (64 * p.y));
+    }
+
+    private void ResetBoard()
+    {
+        gameBoard.SetActive(false);
+        menu.SetActive(true);
+        GameActive = false;
+        board = null;
+        fills = null;
+        random = null;
+        update = null;
+        flipped = null;
+        dead = null;
+        killed = null;
+
+        foreach (RectTransform child in GameBoard)
+        {
+            GameObject.Destroy(child.gameObject);
+        }
+
+        return;
     }
 }
 
