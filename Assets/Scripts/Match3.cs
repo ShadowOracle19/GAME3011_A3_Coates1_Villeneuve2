@@ -17,6 +17,8 @@ public class Match3 : MonoBehaviour
     public GameObject gameBoard;
     public GameObject menu;
     public TextMeshProUGUI Points;
+    public GameObject winScreen;
+    public GameObject loseScreen;
 
     [Header("Prefabs")]
     public GameObject nodePiece;
@@ -67,6 +69,7 @@ public class Match3 : MonoBehaviour
 
         if(PointsGained >= PointsNeeded)
         {
+            winScreen.SetActive(true);
             ResetBoard();          
             return;
         }
@@ -80,8 +83,9 @@ public class Match3 : MonoBehaviour
         currentTime -= 1 * Time.deltaTime;
         countDownText.text = currentTime.ToString("0");
 
-        if(currentTime <= 0)
+        if(currentTime <= 0)//lose
         {
+            loseScreen.SetActive(true);
             ResetBoard();
             return;
         }
@@ -535,7 +539,6 @@ public class Match3 : MonoBehaviour
     private void ResetBoard()
     {
         gameBoard.SetActive(false);
-        menu.SetActive(true);
         GameActive = false;
         board = null;
         fills = null;
