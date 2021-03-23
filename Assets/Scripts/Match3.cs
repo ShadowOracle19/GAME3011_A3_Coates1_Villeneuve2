@@ -9,6 +9,12 @@ public class Match3 : MonoBehaviour
     public Sprite[] pieces;
     public RectTransform GameBoard;
     public RectTransform killBoard;
+    public int movesLeft;
+    public int PointsNeeded;
+    public int PointsGained;
+    public bool GameActive = false;
+    public GameObject gameBoard;
+    public GameObject menu;
 
     [Header("Prefabs")]
     public GameObject nodePiece;
@@ -26,13 +32,54 @@ public class Match3 : MonoBehaviour
 
     System.Random random;
     // Start is called before the first frame update
-    void Start()
+
+    
+    public void EasyButtonPress()
     {
+        GameActive = true;
+        movesLeft = 30;
+        StartGame();
+    }
+    public void MediumButtonPress()
+    {
+        GameActive = true;
+        movesLeft = 25;
+        StartGame();
+    }
+    public void HardButtonPress()
+    {
+        GameActive = true;
+        movesLeft = 20;
         StartGame();
     }
 
     void Update()
     {
+        if (!GameActive)
+            return;
+
+        if(PointsGained >= PointsNeeded)
+        {
+            gameBoard.SetActive(false);
+            menu.SetActive(true);
+            GameActive = false;
+            board = null;
+            fills = null;
+            random = null;
+            update = null;
+            flipped = null;
+            dead = null;
+            killed = null;
+
+            return;
+            //end game
+            //Clear Board
+        }
+        else if(movesLeft == 0)
+        {
+            //end game
+        }
+
         List<NodePiece> finishedUpdateing = new List<NodePiece>();
         for (int i = 0; i < update.Count; i++)
         {
@@ -180,6 +227,8 @@ public class Match3 : MonoBehaviour
         flipped = new List<FlippedPieces>();
         dead = new List<NodePiece>();
         killed = new List<KilledPiece>();
+        PointsGained = 0;
+        PointsNeeded = Random.Range(1000, 2000);
 
         InitializeBoard();
         VerifyBoard();
@@ -272,6 +321,7 @@ public class Match3 : MonoBehaviour
 
             update.Add(pieceOne);
             update.Add(pieceTwo);
+            movesLeft -= 1;
         }
         else
             ResetPiece(pieceOne);
@@ -289,15 +339,18 @@ public class Match3 : MonoBehaviour
         if(avaliable.Count > 0)
         {
             set = avaliable[0];
+            PointsGained += 15;
         }
         else
         {
+            
             GameObject kill = GameObject.Instantiate(killedPiece, killBoard);
             KilledPiece kPiece = kill.GetComponent<KilledPiece>();
+            PointsGained += 15;
             set = kPiece;
             killed.Add(kPiece);
         }
-
+        
         int val = getValueAtPoint(p) - 1;
         if (set != null && val >= 0 && val < pieces.Length)
             set.Initialize(pieces[val], getPositionFromPoint(p));
