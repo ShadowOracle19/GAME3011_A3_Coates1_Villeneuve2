@@ -13,6 +13,7 @@ public class Match3 : MonoBehaviour
     public RectTransform killBoard;
     public int PointsNeeded;
     public int PointsGained;
+    public int PointsGainedPerMatch;
     public bool GameActive = false;
     public GameObject gameBoard;
     public GameObject menu;
@@ -20,6 +21,7 @@ public class Match3 : MonoBehaviour
     public GameObject winScreen;
     public GameObject loseScreen;
     public AudioSource matchSound;
+
 
     [Header("Prefabs")]
     public GameObject nodePiece;
@@ -48,18 +50,21 @@ public class Match3 : MonoBehaviour
     {
         GameActive = true;
         startingTime = 60f;
+        PointsGainedPerMatch = 20;
         StartGame();
     }
     public void MediumButtonPress()
     {
         GameActive = true;
         startingTime = 45f;
+        PointsGainedPerMatch = 15;
         StartGame();
     }
     public void HardButtonPress()
     {
         GameActive = true;
         startingTime = 30f;
+        PointsGainedPerMatch = 10;
         StartGame();
     }
 
@@ -354,7 +359,7 @@ public class Match3 : MonoBehaviour
         if(avaliable.Count > 0)
         {
             set = avaliable[0];
-            PointsGained += 15;
+            PointsGained += PointsGainedPerMatch;
             matchSound.Play();
         }
         else
@@ -362,7 +367,7 @@ public class Match3 : MonoBehaviour
             
             GameObject kill = GameObject.Instantiate(killedPiece, killBoard);
             KilledPiece kPiece = kill.GetComponent<KilledPiece>();
-            PointsGained += 15;
+            PointsGained += PointsGainedPerMatch;
             matchSound.Play();
             set = kPiece;
             killed.Add(kPiece);
