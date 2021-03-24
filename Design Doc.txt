@@ -1,0 +1,9 @@
+The theme for our match four game is just a basic match the shapes, its very minimalistic in design.
+The system works by using lists to hold the different objects like when flipping the pieces and even
+with the animation for killing the pieces. the game gets randomized by creating a random seed
+from a line of characters. the way the difficulty works is where the higher the difficulty the less
+time you have to match the pieces to get the points required which the points required are randomized
+in every game and the harder the difficulty the less points you will get for each match so you will
+have to be smart with each match you make as well as faster. There are no bonus objects for this 
+game but to make it interesting instead of just making the objects disappear they pop off the screen
+to give it a cool effect.
