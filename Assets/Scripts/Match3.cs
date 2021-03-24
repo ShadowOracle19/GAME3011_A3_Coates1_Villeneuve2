@@ -7,7 +7,7 @@ using TMPro;
 public class Match3 : MonoBehaviour
 {
     public ArrayLayout boardLayout;
-    [Header("UI Elements")]
+    [Header("Game Elements")]
     public Sprite[] pieces;
     public RectTransform GameBoard;
     public RectTransform killBoard;
@@ -19,6 +19,7 @@ public class Match3 : MonoBehaviour
     public TextMeshProUGUI Points;
     public GameObject winScreen;
     public GameObject loseScreen;
+    public AudioSource matchSound;
 
     [Header("Prefabs")]
     public GameObject nodePiece;
@@ -354,6 +355,7 @@ public class Match3 : MonoBehaviour
         {
             set = avaliable[0];
             PointsGained += 15;
+            matchSound.Play();
         }
         else
         {
@@ -361,6 +363,7 @@ public class Match3 : MonoBehaviour
             GameObject kill = GameObject.Instantiate(killedPiece, killBoard);
             KilledPiece kPiece = kill.GetComponent<KilledPiece>();
             PointsGained += 15;
+            matchSound.Play();
             set = kPiece;
             killed.Add(kPiece);
         }
